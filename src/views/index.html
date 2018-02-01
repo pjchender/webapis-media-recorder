@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
+
 <head>
   <title>透過 JavaScript 打造一個視訊錄影機吧</title>
   <meta charset="UTF-8">
@@ -15,6 +16,52 @@
 </head>
 
 <body>
+  <div class="container">
+    <div class="card">
+      <div class="card-body">
+        <div class="row mb-4">
+          <div class="col-12">
+            <h1 class="text-center mb-3">透過 JavaScript 打造一個視訊錄影機吧</h1>
+            <p>
+              這個範例示範如何透過瀏覽器內建的 MediaStream API 來打造影音錄影的功能
+              <small class="text-muted">
+                （開發環境使用 Chrome 瀏覽器）
+              </small>
+            </p>
+          </div>
+        </div>
+
+        <div class="row mb-5 justify-content-center align-items-center">
+          <div class="col-md-6 text-center">
+            <div class="video-container d-flex align-items-center justify-content-center">
+              <video id="inputVideo" alt="在這裡錄影" muted>Video stream not available.</video>
+            </div>
+          </div>
+
+          <div class="col-md-6 text-center">
+            <div class="video-container d-flex align-items-center justify-content-center">
+              <video id="outputVideo" alt="錄好的畫面將會出現在這" muted>Video stream not available.</video>
+            </div>
+          </div>
+        </div>
+
+        <div class="row mb-4 justify-content-center align-items-center">
+          <div class="col-6 d-flex justify-content-between align-items-center">
+            <button id="startBtn" class="btn btn-sm btn-outline-primary">Start Recording</button>
+            <button id="requestData" class="btn btn-sm btn-outline-warning">Request Data</button>
+            <button id="stopBtn" class="btn btn-sm btn-outline-danger">Stop Recording</button>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-12">
+            <div role="alert" id="errorMsg"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Vendor -->
   <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
     crossorigin="anonymous"></script>
