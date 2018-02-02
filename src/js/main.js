@@ -11,16 +11,16 @@ let outputVideo = document.querySelector('#outputVideo')
 // <button> element
 let startBtn = document.querySelector('#startBtn')
 let stopBtn = document.querySelector('#stopBtn')
+let resetBtn = document.querySelector('#resetBtn')
 
 // error message
 let errorElement = document.querySelector('#errorMsg')
-let isRecordingElement = document.querySelector('.is-recording')
+let isRecordingIcon = document.querySelector('.is-recording')
 
 /**
  * Global variables
  */
-// 在 mediaRecord 要用的 chunks
-let chunks = []
+let chunks = []           // 在 mediaRecord 要用的 chunks
 
 // 在 getUserMedia 使用的 constraints 變數
 let constraints = {
@@ -28,10 +28,13 @@ let constraints = {
   video: true
 }
 
-isRecordingBtn(false)
 mediaRecorderSetup(1000)
 
 function mediaRecorderSetup (sliceTime) {
+
+  // 設定顯示的按鍵
+  isRecordingBtn('start')
+
   // mediaDevices.getUserMedia() 取得使用者媒體影音檔
   navigator.mediaDevices.getUserMedia(constraints)
     .then(function (stream) {
@@ -46,10 +49,10 @@ function mediaRecorderSetup (sliceTime) {
        * MediaRecorder methods
        */
       // Start Recording: mediaRecorder.start()
-      startBtn.addEventListener('click', e => {
+      startBtn.addEventListener('click', function (e) {
         e.preventDefault()
         e.stopPropagation()
-        isRecordingBtn(true)
+        isRecordingBtn('stop')
         mediaRecorder.start(sliceTime)
         console.log('mediaRecorder.start()')
         console.log('mediaRecorder.state: ', mediaRecorder.state)
@@ -59,11 +62,27 @@ function mediaRecorderSetup (sliceTime) {
       stopBtn.addEventListener('click', e => {
         e.preventDefault()
         e.stopPropagation()
-        isRecordingBtn(false)
+        isRecordingBtn('start')
         mediaRecorder.stop()
         console.log('mediaRecorder.stop()')
         console.log('mediaRecorder.state: ', mediaRecorder.state)
       })
+
+      // Reset Recording
+      // resetBtn.addEventListener('click', e => {
+      //   e.preventDefault()
+      //   e.stopPropagation()
+
+        // 釋放記憶體
+        // console.log('invoke reset recording')
+        // URL.revokeObjectURL(inputVideoURL)
+        // URL.revokeObjectURL(outputVideoURL)
+        // outputVideo.src = ''
+        // inputVideo.src = ''
+
+        // 重新啟動攝影機
+        // mediaRecorderSetup(1000)
+      // })
 
       /**
        * MediaRecorder EventHandler
@@ -92,11 +111,7 @@ function mediaRecorderSetup (sliceTime) {
 
         // 在這裡 revokeObjectURL(dataURL) 將會使得 outputVideo 無法取得影片
         // URL.revokeObjectURL(outputVideoURL)
-      })
-
-      /**
-       * === 結束：透過 MediaRecorder 錄影 ===
-      **/
+      })  /* === 結束：透過 MediaRecorder 錄影 === */
 
       /**
        * inputVideo Element
@@ -108,7 +123,7 @@ function mediaRecorderSetup (sliceTime) {
 
       inputVideo.addEventListener('loadedmetadata', e => {
         inputVideo.play()
-        console.log('inputputVideo on loadedmetadata')
+        console.log('inputVideo on loadedmetadata')
       })
     })
     .catch(function (error) {
@@ -144,14 +159,22 @@ function saveData(dataURL) {
   // window.URL.revokeObjectURL(dataURL);
 }
 
-function isRecordingBtn (isRecording) {
-  if (isRecording) {
-    startBtn.style.display = 'none'
-    stopBtn.style.display = 'block'
-    isRecordingElement.style.display = 'block'
-  } else {
+function isRecordingBtn (recordBtnState) {
+  startBtn.style.display = 'none'
+  stopBtn.style.display = 'none'
+  resetBtn.style.display = 'none'
+  isRecordingIcon.style.display = 'none'
+  if (recordBtnState === 'start') {
+    // show startBtn
     startBtn.style.display = 'block'
-    stopBtn.style.display = 'none'
-    isRecordingElement.style.display = 'none'
+  } else if (recordBtnState === 'stop') {
+    // show stopBtn
+    stopBtn.style.display = 'block'
+    isRecordingIcon.style.display = 'block'
+  } else if (recordBtnState === 'reset') {
+    // show resetBtn
+    resetBtn.style.display = 'block'
+  } else {
+    console.warn('isRecordingBtn error')
   }
 }
