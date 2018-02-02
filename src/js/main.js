@@ -14,6 +14,7 @@ let stopBtn = document.querySelector('#stopBtn')
 
 // error message
 let errorElement = document.querySelector('#errorMsg')
+let isRecordingElement = document.querySelector('.is-recording')
 
 /**
  * Global variables
@@ -147,8 +148,10 @@ function isRecordingBtn (isRecording) {
   if (isRecording) {
     startBtn.style.display = 'none'
     stopBtn.style.display = 'block'
+    isRecordingElement.style.display = 'block'
   } else {
     startBtn.style.display = 'block'
     stopBtn.style.display = 'none'
+    isRecordingElement.style.display = 'none'
   }
 }
