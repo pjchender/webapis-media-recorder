@@ -32,69 +32,75 @@ mediaRecorderSetup(1000)
 
 function mediaRecorderSetup (sliceTime) {
 
+  console.warn('invoke mediaRecorderSetup')
+
   // 設定顯示的按鍵
   isRecordingBtn('start')
 
   // mediaDevices.getUserMedia() 取得使用者媒體影音檔
   navigator.mediaDevices.getUserMedia(constraints)
     .then(function (stream) {
-
       /**
        * === 開始：透過 MediaRecorder 錄影 ===
       **/
       // 建立 MediaRecorder 準備錄影
       let mediaRecorder = new MediaRecorder(stream)
 
-      /**
-       * MediaRecorder methods
-       */
+      startBtn.addEventListener('click', onStartRecording)
+      stopBtn.addEventListener('click', onStopRecording)
+      resetBtn.addEventListener('click', onReset)
+
       // Start Recording: mediaRecorder.start()
-      startBtn.addEventListener('click', function (e) {
+      function onStartRecording (e) {
         e.preventDefault()
         e.stopPropagation()
         isRecordingBtn('stop')
-        mediaRecorder.start(sliceTime)
+        mediaRecorder.start()
         console.log('mediaRecorder.start()')
-        console.log('mediaRecorder.state: ', mediaRecorder.state)
-      })
+      }
 
       // Stop Recording: mediaRecorder.stop()
-      stopBtn.addEventListener('click', e => {
+      function onStopRecording (e) {
         e.preventDefault()
         e.stopPropagation()
-        isRecordingBtn('start')
+        isRecordingBtn('reset')
         mediaRecorder.stop()
         console.log('mediaRecorder.stop()')
-        console.log('mediaRecorder.state: ', mediaRecorder.state)
-      })
+      }
 
       // Reset Recording
-      // resetBtn.addEventListener('click', e => {
-      //   e.preventDefault()
-      //   e.stopPropagation()
+      function onReset (e) {
+        e.preventDefault()
+        e.stopPropagation()
 
+        startBtn.removeEventListener('click', onStartRecording, false)
+        stopBtn.removeEventListener('click', onStopRecording, false)
+        resetBtn.removeEventListener('click', onReset, false)
         // 釋放記憶體
         // console.log('invoke reset recording')
         // URL.revokeObjectURL(inputVideoURL)
         // URL.revokeObjectURL(outputVideoURL)
         // outputVideo.src = ''
-        // inputVideo.src = ''
+        inputVideo.src = ''
 
         // 重新啟動攝影機
-        // mediaRecorderSetup(1000)
-      // })
+        mediaRecorderSetup()
+      }
 
       /**
        * MediaRecorder EventHandler
        */
       // 有資料傳入時觸發
-      mediaRecorder.addEventListener('dataavailable', e => {
+      mediaRecorder.addEventListener('dataavailable', mediaRecorderOnDataAvailable)
+      // 停止錄影時觸發
+      mediaRecorder.addEventListener('stop', mediaRecorderOnStop)
+
+      function mediaRecorderOnDataAvailable (e) {
         console.log('mediaRecorder on dataavailable', e.data)
         chunks.push(e.data)
-      })
+      }
 
-      // 停止錄影時觸發
-      mediaRecorder.addEventListener('stop', () => {
+      function mediaRecorderOnStop (e) {
         console.log('mediaRecorder on stop')
         outputVideo.controls = true
         var blob = new Blob(chunks, { 'type': 'video/webm; codecs=vp9' })
@@ -103,15 +109,19 @@ function mediaRecorderSetup (sliceTime) {
         outputVideo.src = outputVideoURL
 
         // saveData(outputVideoURL)
-        mediaRecorderSetup()
+
         // 停止所有的輸入或輸出的串流裝置（例如，關攝影機）
         stream.getTracks().forEach(function (track) {
           track.stop()
         })
 
+        // mediaRecorderSetup()
+
         // 在這裡 revokeObjectURL(dataURL) 將會使得 outputVideo 無法取得影片
         // URL.revokeObjectURL(outputVideoURL)
-      })  /* === 結束：透過 MediaRecorder 錄影 === */
+      }
+
+      /* === 結束：透過 MediaRecorder 錄影 === */
 
       /**
        * inputVideo Element
@@ -120,11 +130,6 @@ function mediaRecorderSetup (sliceTime) {
       let inputVideoURL = URL.createObjectURL(stream)
       inputVideo.src = inputVideoURL
       inputVideo.controls = false
-
-      inputVideo.addEventListener('loadedmetadata', e => {
-        inputVideo.play()
-        console.log('inputVideo on loadedmetadata')
-      })
     })
     .catch(function (error) {
       if (error.name === 'ConstraintNotSatisfiedError') {
@@ -137,6 +142,20 @@ function mediaRecorderSetup (sliceTime) {
     })
 }
 
+
+/**
+ * DOM EventListner
+ */
+inputVideo.addEventListener('loadedmetadata', function () {
+  inputVideo.play()
+  console.log('inputVideo on loadedmetadata')
+})
+
+
+
+/**
+ * Other Function
+ */
 function errorMsg(msg, error) {
   console.log('errorElement', errorElement)
   errorElement.classList.add('alert', 'alert-warning')
