@@ -22,17 +22,71 @@ let isRecordingIcon = document.querySelector('.is-recording')
  */
 let chunks = []           // 在 mediaRecord 要用的 chunks
 
+
 // 在 getUserMedia 使用的 constraints 變數
 let constraints = {
   audio: true,
   video: true
 }
 
-mediaRecorderSetup(1000)
+let sliceTime = 1000
+mediaRecorderSetup(sliceTime)
+
+/**
+ * MediaRecorder Related Event Handler
+ */
+let mediaRecorder = null
+let inputVideoURL = null
+let outputVideoURL = null
+
+startBtn.addEventListener('click', onStartRecording)
+stopBtn.addEventListener('click', onStopRecording)
+resetBtn.addEventListener('click', onReset)
+
+/**
+ * MediaRecorder Methods
+ */
+// Start Recording: mediaRecorder.start()
+function onStartRecording (e) {
+  e.preventDefault()
+  e.stopPropagation()
+  isRecordingBtn('stop')
+  mediaRecorder.start()
+  console.log('mediaRecorder.start()')
+}
+
+// Stop Recording: mediaRecorder.stop()
+function onStopRecording (e) {
+  e.preventDefault()
+  e.stopPropagation()
+  isRecordingBtn('reset')
+  mediaRecorder.stop()
+  console.log('mediaRecorder.stop()')
+}
+
+// Reset Recording
+function onReset (e) {
+  e.preventDefault()
+  e.stopPropagation()
+
+  // 釋放記憶體
+  URL.revokeObjectURL(inputVideoURL)
+  URL.revokeObjectURL(outputVideoURL)
+  outputVideo.src = ''
+  outputVideo.controls = false
+  inputVideo.src = ''
+
+  // 重新啟動攝影機
+  mediaRecorderSetup(sliceTime)
+}
+
+/**
+ * Setup MediaRecorder
+ **/
 
 function mediaRecorderSetup (sliceTime) {
 
-  console.warn('invoke mediaRecorderSetup')
+  console.log('invoke mediaRecorderSetup')
 
   // 設定顯示的按鍵
   isRecordingBtn('start')
@@ -40,56 +94,13 @@ function mediaRecorderSetup (sliceTime) {
   // mediaDevices.getUserMedia() 取得使用者媒體影音檔
   navigator.mediaDevices.getUserMedia(constraints)
     .then(function (stream) {
-      /**
-       * === 開始：透過 MediaRecorder 錄影 ===
-      **/
+
+
+      /* === 開始：透過 MediaRecorder 錄影 === */
       // 建立 MediaRecorder 準備錄影
-      let mediaRecorder = new MediaRecorder(stream)
+      mediaRecorder = new MediaRecorder(stream)
 
-      startBtn.addEventListener('click', onStartRecording)
-      stopBtn.addEventListener('click', onStopRecording)
-      resetBtn.addEventListener('click', onReset)
-
-      // Start Recording: mediaRecorder.start()
-      function onStartRecording (e) {
-        e.preventDefault()
-        e.stopPropagation()
-        isRecordingBtn('stop')
-        mediaRecorder.start()
-        console.log('mediaRecorder.start()')
-      }
-
-      // Stop Recording: mediaRecorder.stop()
-      function onStopRecording (e) {
-        e.preventDefault()
-        e.stopPropagation()
-        isRecordingBtn('reset')
-        mediaRecorder.stop()
-        console.log('mediaRecorder.stop()')
-      }
-
-      // Reset Recording
-      function onReset (e) {
-        e.preventDefault()
-        e.stopPropagation()
-
-        startBtn.removeEventListener('click', onStartRecording, false)
-        stopBtn.removeEventListener('click', onStopRecording, false)
-        resetBtn.removeEventListener('click', onReset, false)
-        // 釋放記憶體
-        // console.log('invoke reset recording')
-        // URL.revokeObjectURL(inputVideoURL)
-        // URL.revokeObjectURL(outputVideoURL)
-        // outputVideo.src = ''
-        inputVideo.src = ''
-
-        // 重新啟動攝影機
-        mediaRecorderSetup()
-      }
-
-      /**
-       * MediaRecorder EventHandler
-       */
+      /* MediaRecorder EventHandler */
       // 有資料傳入時觸發
       mediaRecorder.addEventListener('dataavailable', mediaRecorderOnDataAvailable)
       // 停止錄影時觸發
@@ -105,7 +116,7 @@ function mediaRecorderSetup (sliceTime) {
         outputVideo.controls = true
         var blob = new Blob(chunks, { 'type': 'video/webm; codecs=vp9' })
         chunks = []
-        let outputVideoURL = URL.createObjectURL(blob)
+        outputVideoURL = URL.createObjectURL(blob)
         outputVideo.src = outputVideoURL
 
         // saveData(outputVideoURL)
@@ -119,15 +130,13 @@ function mediaRecorderSetup (sliceTime) {
 
         // 在這裡 revokeObjectURL(dataURL) 將會使得 outputVideo 無法取得影片
         // URL.revokeObjectURL(outputVideoURL)
-      }
-
-      /* === 結束：透過 MediaRecorder 錄影 === */
+      }/* === 結束：透過 MediaRecorder 錄影 === */
 
       /**
        * inputVideo Element
        * 將串流的 inputVideo 設定到 <video> 上
        **/
-      let inputVideoURL = URL.createObjectURL(stream)
+      inputVideoURL = URL.createObjectURL(stream)
       inputVideo.src = inputVideoURL
       inputVideo.controls = false
     })
@@ -142,7 +151,6 @@ function mediaRecorderSetup (sliceTime) {
     })
 }
 
-
 /**
  * DOM EventListner
  */
@@ -150,8 +158,6 @@ inputVideo.addEventListener('loadedmetadata', function () {
   inputVideo.play()
   console.log('inputVideo on loadedmetadata')
 })
-
-
 
 /**
  * Other Function
@@ -183,17 +189,18 @@ function isRecordingBtn (recordBtnState) {
   stopBtn.style.display = 'none'
   resetBtn.style.display = 'none'
   isRecordingIcon.style.display = 'none'
-  if (recordBtnState === 'start') {
-    // show startBtn
-    startBtn.style.display = 'block'
-  } else if (recordBtnState === 'stop') {
-    // show stopBtn
-    stopBtn.style.display = 'block'
-    isRecordingIcon.style.display = 'block'
-  } else if (recordBtnState === 'reset') {
-    // show resetBtn
-    resetBtn.style.display = 'block'
-  } else {
-    console.warn('isRecordingBtn error')
+  switch (recordBtnState) {
+    case 'start':
+      startBtn.style.display = 'block'         // show startBtn
+      break;
+    case 'stop':
+      stopBtn.style.display = 'block'          // show stopBtn
+      isRecordingIcon.style.display = 'block'
+      break;
+    case 'reset':
+      resetBtn.style.display = 'block'         // show resetBtn
+      break;
+    default:
+      console.warn('isRecordingBtn error')
   }
 }

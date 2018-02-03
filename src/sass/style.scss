@@ -18,7 +18,7 @@ body {
     background-repeat: no-repeat;
     background-position: center;
     background-size: contain;
-    animation: recording 1.5s infinite alternate;
+    animation: recording 1s 0s infinite alternate;
   }
 }
 
@@ -30,9 +30,9 @@ body {
 
 @keyframes recording {
   0% {
-    opacity: 1;
+    opacity: 0.3;
   }
   100% {
-    opacity: 0.3;
+    opacity: 1;
   }
 }
