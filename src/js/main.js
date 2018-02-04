@@ -29,9 +29,6 @@ let constraints = {
   video: true
 }
 
-let sliceTime = 1000
-mediaRecorderSetup(sliceTime)
-
 /**
  * MediaRecorder Related Event Handler
  */
@@ -51,7 +48,7 @@ function onStartRecording (e) {
   e.preventDefault()
   e.stopPropagation()
   isRecordingBtn('stop')
-  mediaRecorder.start()
+  mediaRecorder.start(1000)
   console.log('mediaRecorder.start()')
 }
 
@@ -77,14 +74,14 @@ function onReset (e) {
   inputVideo.src = ''
 
   // 重新啟動攝影機
-  mediaRecorderSetup(sliceTime)
+  mediaRecorderSetup()
 }
 
 /**
  * Setup MediaRecorder
  **/
 
-function mediaRecorderSetup (sliceTime) {
+function mediaRecorderSetup () {
 
   console.log('invoke mediaRecorderSetup')
 
