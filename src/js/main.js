@@ -15,6 +15,8 @@ let resetBtn = document.querySelector('#resetBtn')
 
 // error message
 let errorElement = document.querySelector('#errorMsg')
+
+// is-recording icon
 let isRecordingIcon = document.querySelector('.is-recording')
 
 /**
@@ -22,12 +24,14 @@ let isRecordingIcon = document.querySelector('.is-recording')
  */
 let chunks = []           // 在 mediaRecord 要用的 chunks
 
-
 // 在 getUserMedia 使用的 constraints 變數
 let constraints = {
   audio: true,
   video: true
 }
+
+// 第一次啟動攝影機
+mediaRecorderSetup()
 
 /**
  * MediaRecorder Related Event Handler
@@ -48,7 +52,7 @@ function onStartRecording (e) {
   e.preventDefault()
   e.stopPropagation()
   isRecordingBtn('stop')
-  mediaRecorder.start(1000)
+  mediaRecorder.start()
   console.log('mediaRecorder.start()')
 }
 
@@ -83,8 +87,6 @@ function onReset (e) {
 
 function mediaRecorderSetup () {
 
-  console.log('invoke mediaRecorderSetup')
-
   // 設定顯示的按鍵
   isRecordingBtn('start')
 
@@ -93,15 +95,23 @@ function mediaRecorderSetup () {
     .then(function (stream) {
 
 
-      /* === 開始：透過 MediaRecorder 錄影 === */
+      /**
+       * inputVideo Element
+       * 將串流的 inputVideo 設定到 <video> 上
+       **/
+      inputVideoURL = URL.createObjectURL(stream)
+      inputVideo.src = inputVideoURL
+      inputVideo.controls = false
+
+      /**
+       * 透過 MediaRecorder 錄製影音串流
+       */
       // 建立 MediaRecorder 準備錄影
       mediaRecorder = new MediaRecorder(stream)
 
       /* MediaRecorder EventHandler */
-      // 有資料傳入時觸發
-      mediaRecorder.addEventListener('dataavailable', mediaRecorderOnDataAvailable)
-      // 停止錄影時觸發
-      mediaRecorder.addEventListener('stop', mediaRecorderOnStop)
+      mediaRecorder.addEventListener('dataavailable', mediaRecorderOnDataAvailable)   // 有資料傳入時觸發
+      mediaRecorder.addEventListener('stop', mediaRecorderOnStop)                     // 停止錄影時觸發
 
       function mediaRecorderOnDataAvailable (e) {
         console.log('mediaRecorder on dataavailable', e.data)
@@ -122,20 +132,7 @@ function mediaRecorderSetup () {
         stream.getTracks().forEach(function (track) {
           track.stop()
         })
-
-        // mediaRecorderSetup()
-
-        // 在這裡 revokeObjectURL(dataURL) 將會使得 outputVideo 無法取得影片
-        // URL.revokeObjectURL(outputVideoURL)
-      }/* === 結束：透過 MediaRecorder 錄影 === */
-
-      /**
-       * inputVideo Element
-       * 將串流的 inputVideo 設定到 <video> 上
-       **/
-      inputVideoURL = URL.createObjectURL(stream)
-      inputVideo.src = inputVideoURL
-      inputVideo.controls = false
+      }
     })
     .catch(function (error) {
       if (error.name === 'ConstraintNotSatisfiedError') {
@@ -151,7 +148,7 @@ function mediaRecorderSetup () {
 /**
  * DOM EventListner
  */
-inputVideo.addEventListener('loadedmetadata', function () {
+inputVideo.addEventListener ('loadedmetadata', function () {
   inputVideo.play()
   console.log('inputVideo on loadedmetadata')
 })
@@ -159,7 +156,7 @@ inputVideo.addEventListener('loadedmetadata', function () {
 /**
  * Other Function
  */
-function errorMsg(msg, error) {
+function errorMsg (msg, error) {
   console.log('errorElement', errorElement)
   errorElement.classList.add('alert', 'alert-warning')
   errorElement.innerHTML += msg
@@ -168,7 +165,7 @@ function errorMsg(msg, error) {
   }
 }
 
-function saveData(dataURL) {
+function saveData (dataURL) {
   var fileName = 'my-download-' + Date.now() + '.webm'
   var a = document.createElement('a')
   document.body.appendChild(a)
@@ -176,9 +173,6 @@ function saveData(dataURL) {
   a.href = dataURL
   a.download = fileName
   a.click()
-
-  // 在這裡 revokeObjectURL(dataURL) 將會使得 outputVideo 無法取得影片
-  // window.URL.revokeObjectURL(dataURL);
 }
 
 function isRecordingBtn (recordBtnState) {
