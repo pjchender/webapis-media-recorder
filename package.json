@@ -4,7 +4,8 @@
   "description": "A demo about how to use MediaRecorder to record media stream",
   "main": "index.js",
   "scripts": {
-    "start": "gulp",
+    "build": "gulp",
+    "start": "now",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -20,6 +21,9 @@
     "url": "https://github.com/PJCHENder/webapis-media-recorder/issues"
   },
   "homepage": "https://github.com/PJCHENder/webapis-media-recorder#readme",
+  "dependencies": {
+    "micro": "latest"
+  },
   "devDependencies": {
     "browser-sync": "^2.18.8",
     "gulp": "^3.9.1",
@@ -27,8 +31,9 @@
     "gulp-clean-css": "^3.0.4",
     "gulp-concat": "^2.6.1",
     "gulp-inject": "^4.2.0",
+    "gulp-load-plugins": "^1.5.0",
     "gulp-pug": "^3.3.0",
     "gulp-sass": "^3.1.0",
-    "gulp-load-plugins": "^1.5.0"
+    "now": "^9.2.7"
   }
 }
