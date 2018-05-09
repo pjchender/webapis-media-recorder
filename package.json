@@ -4,8 +4,8 @@
   "description": "A demo about how to use MediaRecorder to record media stream",
   "main": "index.js",
   "scripts": {
-    "build": "gulp",
-    "start": "now",
+    "build": "gulp build",
+    "start": "gulp",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -25,15 +25,16 @@
     "micro": "latest"
   },
   "devDependencies": {
-    "browser-sync": "^2.18.8",
-    "gulp": "^3.9.1",
-    "gulp-autoprefixer": "^3.1.1",
-    "gulp-clean-css": "^3.0.4",
+    "browser-sync": "^2.24.7",
+    "del": "^3.0.0",
+    "gulp": "^4.0.0",
+    "gulp-autoprefixer": "^6.0.0",
+    "gulp-clean-css": "^3.10.0",
     "gulp-concat": "^2.6.1",
-    "gulp-inject": "^4.2.0",
+    "gulp-inject": "^4.3.2",
     "gulp-load-plugins": "^1.5.0",
-    "gulp-pug": "^3.3.0",
-    "gulp-sass": "^3.1.0",
-    "now": "^9.2.7"
+    "gulp-pug": "^4.0.1",
+    "gulp-sass": "^4.0.1",
+    "gulp-uglify-es": "^1.0.4"
   }
 }

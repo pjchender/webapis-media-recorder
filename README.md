@@ -424,9 +424,15 @@ function isRecordingBtn (recordBtnState) {
 
 最後，就可以把整個程式碼統整起來了，完整的程式碼放置於 [Github](https://github.com/PJCHENder/webapis-media-recorder/blob/master/src/js/main.js) 。
 
+## 了解更多
+
+- 包含 WebRTC 完成的說明步驟：[WebRTC](https://codelabs.developers.google.com/codelabs/webrtc-web/) @ WebRTC
+- 包含完整的 WebRTC 說明文件和 Sample Code：[WebRTC](https://github.com/webrtc) @ Github
+
+
 ## 參考
 
-- [Using Prmose](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Using_promises) @ MDN
+- [Using Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Using_promises) @ MDN
 - [An Introduction To JavaScript Blobs and File Interface](http://qnimate.com/an-introduction-to-javascript-blobs-and-file-interface/)
 - [Blob](https://developer.mozilla.org/en-US/docs/Web/API/Blob) @ MDN - Web APIs
 - [HTML Vidoe Element](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/video) @ MDN

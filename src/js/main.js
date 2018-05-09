@@ -107,7 +107,8 @@ function mediaRecorderSetup () {
        * 透過 MediaRecorder 錄製影音串流
        */
       // 建立 MediaRecorder 準備錄影
-      mediaRecorder = new MediaRecorder(stream)
+      // 如果沒有指定 mimeType，錄下來的 webm 影片在 Firefox 上可能不能看（Firefox 也不支援 h264)
+      mediaRecorder = new MediaRecorder(stream, {mimeType : 'video/webm\;codecs=vp9'})
 
       /* MediaRecorder EventHandler */
       mediaRecorder.addEventListener('dataavailable', mediaRecorderOnDataAvailable)   // 有資料傳入時觸發
@@ -146,7 +147,7 @@ function mediaRecorderSetup () {
 }
 
 /**
- * DOM EventListner
+ * DOM EventListener
  */
 inputVideo.addEventListener ('loadedmetadata', function () {
   inputVideo.play()
