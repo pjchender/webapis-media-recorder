@@ -157,16 +157,21 @@ let inputVideo = document.querySelector('#inputVideo')
 
 要把取得的串流放到 `<video>` 中有兩種作法，一種是透過 [HTMLMediaElement.srcObject](https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/srcObject) 的方式，一種是透過 [URL.createObjectURL()](https://developer.mozilla.org/en-US/docs/Web/API/URL/createObjectURL)  的方式，這兩種方法都可以把串流的內容放到 `<video>` 中進行播放，但前者並不會在 `<video>` 上出現 `src` 的屬性即可播放；後者則是利用在 `<video>` 上的 `src` 屬性來讀取影音串流。
 
-由於 [HTMLMediaElement.srcObject](https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/srcObject)  目前僅是實驗性的方法，因此如果要用的話，[MDN](https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/srcObject) 上建議還是要使用 `try ...catch `，進行瀏覽器不支援時的處理。因此在這裡我們還是先用 `URL.createObjectURL()` 的方式將影音串流放到 `<video>` 中：
+由於較新的瀏覽器已不支援 [URL.createObjectURL()](https://developer.mozilla.org/en-US/docs/Web/API/URL/createObjectURL) 的方法，因此建議要加上判斷，看瀏覽器能否使用 [HTMLMediaElement.srcObject](https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/srcObject)，否則的話就使用 [URL.createObjectURL()](https://developer.mozilla.org/en-US/docs/Web/API/URL/createObjectURL)中：
 
 ```js
 let inputVideo = document.querySelector('#inputVideo')
 
 navigator.mediaDevices.getUserMedia(constraints)
   .then(function (stream) {
-    inputVideoURL = URL.createObjectURL(stream)
-    inputVideo.src = inputVideoURL
-    inputVideo.controls = false       // 要不要顯示播放控制器
+     // Older browsers may not have srcObject
+    if ('srcObject' in inputVideo) {
+      inputVideo.srcObject = stream
+    } else {
+      // Avoid using this in new browsers, as it is going away.
+      inputVideo.src = window.URL.createObjectURL(stream)
+    }
+    inputVideo.controls = false   // 要不要顯示播放器
   })
   .catch(function (error) {
     console.warn('some error occurred' + error)
@@ -439,4 +444,3 @@ function isRecordingBtn (recordBtnState) {
 - [MediaDevices](https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices) @ MDN - Web APIs
 - [MediaStreams](https://developer.mozilla.org/en-US/docs/Web/API/MediaStream) @ MDN - Web APIs
 - [Media Recorder](https://developer.mozilla.org/zh-TW/docs/Web/API/MediaRecorder) @ MDN - Web APIs
-
