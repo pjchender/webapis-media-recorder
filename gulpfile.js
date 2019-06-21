@@ -36,11 +36,6 @@ function compileSASS() {
   return gulp
     .src(['vendor/*.css', paths.src.scss], { sourcemaps: true })
     .pipe(sass())
-    .pipe(
-      $.autoprefixer({
-        browsers: ['last 2 versions', 'ie >= 9']
-      })
-    )
     .pipe(concat('style.css'))
     .pipe(gulp.dest(paths.dist.main));
 }
